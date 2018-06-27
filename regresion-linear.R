@@ -26,5 +26,14 @@ sqrt(mean((pred - auto[-t.idx, 2])^2))
 
 #Generando un Plot
 
+par(mfrow = c(2,2))
+plot(mod)
+par(mfrow = c(1,1))
+
+
+auto <- within(auto, cylinders <- relevel(cylinders, ref = "4cyl") )
+mod <- lm(mpg ~., data = auto[t.idx, -c(1, 8, 9)])
+
+par(mfrow = c(2,2))
 plot(mod)
 
