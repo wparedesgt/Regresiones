@@ -67,6 +67,8 @@ galton_heights %>%
   facet_wrap(~z_father)
 
 
+
+
 #Ahora, volvemos a definir la correlación.
 
 #Galton demostró usando estadísticas matemáticas que cuando dos variables siguen una distribución normal bivariada, entonces para cualquier x dada el valor esperado de y en pares para los cuales x se establece en ese valor es mu y más rho x menos mu x dividido por sigma x veces sigma y.
