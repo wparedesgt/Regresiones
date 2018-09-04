@@ -9,11 +9,29 @@
 #Usamos este código para generar un conjunto de datos informativos.
 
 
+library(tidyverse)
+library(Lahman)
+library(dslabs)
+data("Teams")
+
+dat <- Teams %>% filter(yearID %in% 1961:2001) %>% 
+  mutate(HR_strata = round(HR/G, 1), 
+         BB_per_game = BB/G, 
+         R_per_game = R/G) %>% 
+  filter(HR_strata >= 0.4, HR_strata <= 1.2)
 
 
 #Y luego, podemos hacer un diagrama de dispersión para cada estrato.
 
 #Un diagrama de dispersión de carreras versus bases por bolas.
+
+
+dat %>% 
+  ggplot(aes(BB_per_game, R_per_game)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~HR_strata)
+
 
 #Esto es lo que parece.
 
@@ -25,6 +43,11 @@
 
 #Estratificamos por cuadrangulares y luego calculamos la pendiente usando la fórmula que le mostramos anteriormente.
 
+dat %>% 
+  group_by(HR_strata) %>%
+  summarize(slope = cor(BB_per_game, R_per_game)* sd(R_per_game)/sd(BB_per_game)  )
+
+
 #Estos valores están más cerca de la pendiente que obtuvimos de singles, que es 0.449.
 
 #Lo cual es más consistente con nuestra intuición.
@@ -35,9 +58,27 @@
 
 #Usamos el mismo código que acabamos de utilizar para las bases por bolas.
 
-#Pero ahora, intercambiamos jonrones por bases por bolas para obtener esta trama.
+#Pero ahora, intercambiamos jonrones por bases por bolas para obtener esta trama
+
+dat <- Teams %>% filter(yearID %in% 1961:2001) %>% 
+  mutate(BB_strata = round(BB/G, 1), 
+         HR_per_game = HR/G, 
+         R_per_game = R/G) %>% 
+  filter(BB_strata >= 2.8, BB_strata <= 3.9)
+
+
+dat %>% 
+  ggplot(aes(HR_per_game, R_per_game)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~BB_strata)
+
 
 #En este caso, las pendientes son las siguientes.
+
+dat %>% 
+  group_by(BB_strata) %>%
+  summarize(slope = cor(HR_per_game, R_per_game)* sd(R_per_game)/sd(HR_per_game)  )
 
 #Puedes ver que están alrededor de 1.5, 1.6, 1.7.
 
