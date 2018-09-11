@@ -53,9 +53,17 @@ summary(fit)
 
 data("Teams")
 
+#R_per_game = R/G
+#BB_per_game = BB/G
+#HR_per_game = HR/G
+
+#runs_per game ~ bb_per_game + HR_per_game
+
 no_carreras <- Teams %>% filter(yearID %in% 1961:2001) %>%
-  mutate(bb_per_game = R/BB, hr_per_game = R/HR) 
+  mutate(R_per_game = R/G, BB_per_game = BB/G,HR_per_game = HR/G )
+   
 
-lm(bb_per_game ~ hr_per_game, data = no_carreras)  
+lm(R_per_game ~ BB_per_game + HR_per_game, data = no_carreras)
 
-lm(hr_per_game ~ bb_per_game, data = no_carreras)  
+
+Es el coheficiente de bases por bolas
