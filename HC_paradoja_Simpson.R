@@ -1,0 +1,2 @@
+#Paradoja de Simpson
+
