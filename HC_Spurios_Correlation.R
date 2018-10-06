@@ -24,6 +24,8 @@
 
 #Puede ver muchos, muchos más ejemplos observados en este sitio web completamente dedicado a correlaciones espurias.
 
+#http://tylervigen.com/spurious-correlations
+
 #De hecho, ese es el título del sitio web.
 
 #Los casos presentados en el sitio de correlación espuria son ejemplos de lo que generalmente se denomina dragado de datos, o phishing de datos, o espionaje de datos.
@@ -36,29 +38,61 @@
 
 #Guardaremos los resultados de una simulación en una tabla como esta.
 
+library(tidyverse)
+
+N <- 25
+G <- 1000000
+sim_data <- tibble(group = rep(1:G, each = N), X = rnorm(N*G), Y = rnorm(N*G))
+
 #La primera columna indica grupo y simulamos un millón de grupos, cada uno con 25 observaciones.
 
 #Para cada grupo, generamos 25 observaciones que se almacenan en la segunda y tercera columna.
 
 #Estos son datos aleatorios, independientes y normalmente distribuidos.
 
-#Así que sabemos, porque construimos la simulación, que xey no están correlacionadas.
+#Así que sabemos, porque construimos la simulación, que x y no están correlacionadas.
 
-#A continuación, calculamos la correlación entre x e y para cada grupo y buscamos el máximo.
+
+res <- sim_data %>% 
+  group_by(group) %>% 
+  summarize(r = cor(X,Y)) %>% 
+  arrange(desc(r))
+
+head(res)
+
+#A continuación, calculamos la correlación entre x  y para cada grupo y buscamos el máximo.
+
+res
+
+
 
 #Aquí están las principales correlaciones.
 
-#Si solo trazamos los datos de este grupo en particular, muestra un argumento convincente de que xey están, de hecho, correlacionados.
+#Si solo trazamos los datos de este grupo en particular, muestra un argumento convincente de que x y están, de hecho, correlacionados.
+
+sim_data %>% filter(group == res$group[which.max(res$r)]) %>% 
+  ggplot(aes(X, Y)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 
 #Pero recuerda que el número de correlaciones es una variable aleatoria.
 
 #Aquí está la distribución que acabamos de generar con nuestra simulación de Monte Carlo.
+
+res %>% ggplot(aes(x=r)) + geom_histogram(binwidth = 0.1, color = "black")
 
 #Es solo un hecho matemático que si observamos correlaciones aleatorias que se espera que sean 0, pero que tengan un error estándar de aproximadamente 0.2, la más grande estará cerca de 1 si seleccionamos entre un millón.
 
 #Tenga en cuenta que si realizamos la regresión en este grupo e interpretamos el valor p, afirmaríamos incorrectamente que se trataba de una relación estadísticamente significativa.
 
 #Aquí está el código.
+
+library(broom)
+
+sim_data %>% 
+  filter(group == res$group[which.max(res$r)]) %>% 
+  do(tidy(lm(Y ~ X, data = .)))
+
 
 #Mira qué pequeño es el valor de p.
 
